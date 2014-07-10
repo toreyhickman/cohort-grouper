@@ -1,0 +1,16 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    dbc-ruby (1.0.4)
+      rest-client
+    mime-types (2.3)
+    netrc (0.7.7)
+    rest-client (1.7.1)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  dbc-ruby
