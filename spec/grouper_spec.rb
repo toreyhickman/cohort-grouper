@@ -1,45 +1,54 @@
 require_relative "../grouper.rb"
 
 describe Grouper do
-    let(:list) { %w(a b c d e f) }
-    let(:no_repeats) { %w(a b c d) }
-    let(:repeats) { %w(e f g h) }
-    let(:previous_groups) { [ %w(e f), %w(i j k l)] }
-    let(:grouper) { Grouper.new(previous_groups) }
+  let(:list) { %w(a b c d e f) }
+  let(:no_repeats) { %w(a b c d) }
+  let(:repeats) { %w(e f g h) }
+  let(:previous_groups) { [ %w(e f), %w(i j k l)] }
+  let(:grouper) { Grouper.new(list: list, previous_groups: previous_groups) }
+
+  describe "#initialize" do
+    it "calls for the pair history" do
+      Grouper.any_instance.stub(:record_pair_history)
+      Grouper.any_instance.should_receive(:record_pair_history)
+      Grouper.new({})
+    end
+  end
+
+  describe "#record_pair_history" do
+    it "returns each item in list mapped to its previous pairs" do
+      expect(grouper.record_pair_history['e']).to eq %w(f)
+      expect(grouper.record_pair_history['a']).to eq %w()
+    end
+  end
+
+  describe "#previous_pairs" do
+    it "finds the previous pairs for an item" do
+      expect(grouper.previous_pairs("e")).to eq %w(f)
+    end
+  end
 
   describe "#group" do
-    it "returns a nested array" do
-      grouper.stub(:all_new_groups?) { true }
+    let(:list) { %w(a b c d) }
+    it "returns groups with no repeat pairs when possible" do
+      grouper.stub(:name_pairs_map) { { :a => [:b],
+                                        :b => [:a],
+                                        :c => [:d],
+                                        :d => [:c] } }
+      grouper.stub(max_group_size: 3)
 
-      expect(grouper.group(list).first).to be_an Array
-    end
-  end
-
-  describe "#make_groups" do
-    it "divides list into groups of four" do
-      expect(grouper.make_groups(list).first).to have(4).items
-    end
-  end
-
-  describe "#all_new_groups?" do
-    it "detects when any group includes a repeat pair" do
-      grouper.stub(:new_group?) { false }
-      expect(grouper.new_group?([])).to be_false
+      expect(grouper.group).to eq [[:a, :c], [:b, :d]]
     end
 
-    it "detects when no groups include a repeat pair" do
-      grouper.stub(:new_group?) { true }
-      expect(grouper.new_group?([])).to be_true
-    end
-  end
+    it "has a max group size" do
+      grouper.stub(max_group_size: 3)
+      grouper.stub(:sorted_pairs_map) { { :a => [],
+                                          :b => [],
+                                          :c => [],
+                                          :d => [],
+                                          :e => [] } }
 
-  describe "#new_group?" do
-    it "detects when a group includes previous pairs" do
-      expect(grouper.new_group?(repeats)).to be_false
-    end
-
-    it "detects when a group includes no previous pairs" do
-      expect(grouper.new_group?(no_repeats)).to be_true
+      expect(grouper.group.first.size).to eq 3
     end
   end
 end
