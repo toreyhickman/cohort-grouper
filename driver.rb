@@ -1,5 +1,7 @@
 require_relative "grouper"
 require "pp"
+require 'csv'
+require 'dbc-ruby'
 
 Names = [
     "Andrew",
