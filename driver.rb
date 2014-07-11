@@ -41,6 +41,7 @@ if ARGV[0] && __FILE__ == $0
 
     proposed_groups = grouper.group
 
+    puts "\nStudents with repeat pairs:"
     puts grouper.report_overlap(proposed_groups)
 
     pp proposed_groups

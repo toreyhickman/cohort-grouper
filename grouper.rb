@@ -34,9 +34,13 @@ class Grouper
   end
 
   def report_overlap(groups)
-    name_pairs_map.keys.sort.each_with_object([]) do |name, memo|
-      memo << "#{name}:\t#{(name_pairs_map[name] & groups.find { |group| group.include? name}).size } repeat pairs"
+    record_of_repeat_pairs = name_pairs_map.keys.sort.each_with_object([]) do |name, memo|
+      overlap = name_pairs_map[name] & groups.find { |group| group.include? name}
+      memo << "#{name}:\t#{overlap.size } repeat pairs" unless overlap.empty?
     end
+
+    record_of_repeat_pairs << "No repeat pairs" if record_of_repeat_pairs.empty?
+    return record_of_repeat_pairs
   end
 
   # def sorted_pairs_map
