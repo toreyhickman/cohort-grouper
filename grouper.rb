@@ -1,5 +1,5 @@
 class Grouper
-  attr_reader :list, :previous_groups, :name_pairs_map, :max_group_size
+  attr_reader :list, :previous_groups, :name_pairs_map, :max_group_size, :groups
 
   def initialize(args)
     @max_group_size = args.fetch(:max_group_size) { 4 }
@@ -19,7 +19,7 @@ class Grouper
   end
 
   def group
-    name_pairs_map.each_with_object(Array.new(1, [])) do |(name, previous_pairs), new_groups|
+    @groups = name_pairs_map.each_with_object(Array.new(1, [])) do |(name, previous_pairs), new_groups|
       new_groups.each do |group|
         if group.size < max_group_size && (previous_pairs & group).empty?
           group << name
@@ -53,6 +53,14 @@ class Grouper
 
   def shuffled_list
     list.shuffle
+  end
+
+  def groups_made?
+    !groups.nil?
+  end
+
+  def group_list
+    groups_made? ? groups.map.with_index { |group, index| "#{index + 1}.  #{group.join(', ')}" } : "Groups haven't been assigned."
   end
 
   # def make_groups(list)
