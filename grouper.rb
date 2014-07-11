@@ -5,11 +5,10 @@ class Grouper
     @max_group_size = args.fetch(:max_group_size) { 4 }
     @list = args[:list]
     @previous_groups = args.fetch(:previous_groups) { [] }
-    @name_pairs_map  = record_pair_history
   end
 
   def record_pair_history
-    shuffled_list.each_with_object({}) do |list_item, memo|
+    @name_pairs_map = shuffled_list.each_with_object({}) do |list_item, memo|
       memo[list_item] = previous_pairs(list_item)
     end
   end
@@ -19,6 +18,8 @@ class Grouper
   end
 
   def group
+    record_pair_history
+
     @groups = name_pairs_map.each_with_object(Array.new(1, [])) do |(name, previous_pairs), new_groups|
       new_groups.each do |group|
         if group.size < max_group_size && (previous_pairs & group).empty?
