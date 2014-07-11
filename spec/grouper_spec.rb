@@ -7,14 +7,6 @@ describe Grouper do
   let(:previous_groups) { [ %w(e f), %w(i j k l)] }
   let(:grouper) { Grouper.new(list: list, previous_groups: previous_groups) }
 
-  describe "#initialize" do
-    it "calls for the pair history" do
-      Grouper.any_instance.stub(:record_pair_history)
-      Grouper.any_instance.should_receive(:record_pair_history)
-      Grouper.new({})
-    end
-  end
-
   describe "#record_pair_history" do
     it "returns each item in list mapped to its previous pairs" do
       expect(grouper.record_pair_history['e']).to eq %w(f)
@@ -30,6 +22,14 @@ describe Grouper do
 
   describe "#group" do
     let(:list) { %w(a b c d) }
+
+    it "calls for the pair history" do
+      grouper.stub(name_pairs_map: [], record_pair_history: nil)
+      grouper.should_receive(:record_pair_history)
+
+      grouper.group
+    end
+
     it "returns groups with no repeat pairs when possible" do
       grouper.stub(:name_pairs_map) { { :a => [:b],
                                         :b => [:a],
