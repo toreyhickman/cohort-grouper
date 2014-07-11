@@ -29,7 +29,8 @@ if ARGV[0] && __FILE__ == $0
   def confirm_groups
     puts "\n\nDo you want to use these groups? ( y / n )"
     response = $stdin.gets.chomp.downcase
-    return response =~ /y/ ? true : false
+
+    response =~ /y/
   end
 
 
@@ -39,10 +40,10 @@ if ARGV[0] && __FILE__ == $0
   groups_ok = false
   until groups_ok
 
-    proposed_groups = grouper.group
+    grouper.group
 
     puts "\nStudents with repeat pairs:"
-    puts grouper.report_overlap(proposed_groups)
+    puts grouper.report_overlap
 
     puts "\n\nProposed groups:"
     puts grouper.group_list
