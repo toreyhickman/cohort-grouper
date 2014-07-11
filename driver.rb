@@ -13,7 +13,7 @@ if ARGV[0] && __FILE__ == $0
 
   # Assign ARGV values to variables
   CohortName = ARGV[0]
-  MaxGroupSize = ARGV[1].to_i
+  MaxGroupSize = ARGV[1] ? ARGV[1].to_i : 4
 
 
 
