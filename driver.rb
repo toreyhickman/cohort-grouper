@@ -22,7 +22,7 @@ if ARGV[0] && __FILE__ == $0
   Names = cohort.student_names
 
 
-  cohort_csv_file_path = "./cohort-group-records/#{CohortName}"
+  cohort_csv_file_path = "./cohort-group-records/#{CohortName}.csv"
   PreviousGroups = Pathname.new(cohort_csv_file_path).exist? ? CSV.read(cohort_csv_file_path) : Array.new
 
 
@@ -48,5 +48,9 @@ if ARGV[0] && __FILE__ == $0
     puts grouper.group_list
 
     groups_ok = confirm_groups
+  end
+
+  CSV.open(cohort_csv_file_path, "a") do |csv_file|
+    grouper.groups.each { |group| csv_file << group }
   end
 end
