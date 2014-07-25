@@ -9,14 +9,14 @@ describe Grouper do
 
   describe "#record_pair_history" do
     it "returns each item in list mapped to its previous pairs" do
-      expect(grouper.record_pair_history['e']).to eq %w(f)
-      expect(grouper.record_pair_history['a']).to eq %w()
+      expect(grouper.send(:record_pair_history)['e']).to eq %w(f)
+      expect(grouper.send(:record_pair_history)['a']).to eq %w()
     end
   end
 
   describe "#previous_pairs" do
     it "finds the previous pairs for an item" do
-      expect(grouper.previous_pairs("e")).to eq %w(f)
+      expect(grouper.send(:previous_pairs, "e")).to eq %w(f)
     end
   end
 
@@ -24,31 +24,89 @@ describe Grouper do
     let(:list) { %w(a b c d) }
 
     it "calls for the pair history" do
-      grouper.stub(name_pairs_map: [], record_pair_history: nil)
-      grouper.should_receive(:record_pair_history)
+      allow(grouper).to receive(:name_pairs_map) { Array.new }
+      allow(grouper).to receive(:record_pair_history) { nil }
+
+      expect(grouper).to receive(:record_pair_history)
 
       grouper.group
     end
 
-    it "returns groups with no repeat pairs when possible" do
-      grouper.stub(:name_pairs_map) { { :a => [:b],
-                                        :b => [:a],
-                                        :c => [:d],
-                                        :d => [:c] } }
-      grouper.stub(max_group_size: 3)
+    it "tries to make groups with no repeat pairs" do
+      allow(grouper).to receive(:name_pairs_map) { { :a => [:b],
+                                                     :b => [:a],
+                                                     :c => [:d],
+                                                     :d => [:c] } }
+      allow(grouper).to receive(:max_group_size) { 2 }
 
       expect(grouper.group).to eq [[:a, :c], [:b, :d]]
     end
 
-    it "has a max group size" do
-      grouper.stub(max_group_size: 3)
-      grouper.stub(:sorted_pairs_map) { { :a => [],
-                                          :b => [],
-                                          :c => [],
-                                          :d => [],
-                                          :e => [] } }
+    it "groups according to max group size" do
+      allow(grouper).to receive(:max_group_size) { 3 }
+      allow(grouper).to receive(:name_pairs_map) { { :a => [],
+                                                     :b => [],
+                                                     :c => [],
+                                                     :d => [],
+                                                     :e => [],
+                                                     :f => [] } }
 
-      expect(grouper.group.first.size).to eq 3
+      group_sizes = grouper.group.map(&:size)
+      expect(group_sizes.all? { |size| size == 3 }).to be true
+    end
+
+    it "adds extras if the size of the last group is two or more less than max group size" do
+      long_list = %w(a b c d e f g h i j)
+      grouper = Grouper.new(list: long_list, previous_groups: previous_groups)
+
+      allow(grouper).to receive(:max_group_size) { 4 }
+      allow(grouper).to receive(:name_pairs_map) { { :a => [],
+                                                     :b => [],
+                                                     :c => [],
+                                                     :d => [],
+                                                     :e => [],
+                                                     :f => [],
+                                                     :g => [],
+                                                     :h => [],
+                                                     :i => [],
+                                                     :j => [] } }
+
+      group_sizes = grouper.group.map(&:size)
+      expect(group_sizes).to eq [5, 5]
+    end
+
+    it "keeps last group if size is one less than max group size" do
+      long_list = %w(a b c d e f g h)
+      grouper = Grouper.new(list: long_list, previous_groups: previous_groups)
+
+      allow(grouper).to receive(:max_group_size) { 3 }
+      allow(grouper).to receive(:name_pairs_map) { { :a => [],
+                                        :b => [],
+                                        :c => [],
+                                        :d => [],
+                                        :e => [],
+                                        :f => [],
+                                        :g => [],
+                                        :h => [] } }
+
+      group_sizes = grouper.group.map(&:size)
+      expect(group_sizes).to eq [3, 3, 2]
+    end
+
+    it "adds extras if last group size is one" do
+      five_item_list = %w(a b c d e)
+      grouper = Grouper.new(list: five_item_list, previous_groups: previous_groups)
+
+      allow(grouper).to receive(:max_group_size) { 2 }
+      allow(grouper).to receive(:name_pairs_map) { { :a => [],
+                                        :b => [],
+                                        :c => [],
+                                        :d => [],
+                                        :e => [] } }
+
+      group_sizes = grouper.group.map(&:size)
+      expect(group_sizes).to eq [3, 2]
+
     end
   end
 end

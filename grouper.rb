@@ -11,6 +11,7 @@ class Grouper
     record_pair_history
 
     @groups = name_pairs_map.each_with_object(Array.new(1, [])) do |(name, previous_pairs), new_groups|
+
       new_groups.each do |group|
         if group.size < max_group_size && (previous_pairs & group).empty?
           group << name
@@ -18,10 +19,24 @@ class Grouper
         end
       end
 
+
       if new_groups.none? { |group| group.include?(name) }
         new_groups.size == max_groups ? (new_groups.find { |group| group.size < max_group_size } << name) : (new_groups << [name])
       end
     end
+
+
+    if groups.last.size == 1 || max_group_size - groups.last.size > 1
+      extras = groups.pop
+
+      extras.each do |name|
+        groups_without_extras = groups.select { |group| group.size == max_group_size }
+        group_for_name = groups_without_extras.min_by { |group| group & name_pairs_map[name] }
+        group_for_name ? group_for_name << name : groups.first << name
+      end
+    end
+
+    groups
   end
 
   def report_overlap
