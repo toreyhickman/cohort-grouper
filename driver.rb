@@ -13,7 +13,7 @@ if ARGV[0] && __FILE__ == $0
 
   # Assign ARGV values to variables
   CohortName = ARGV[0]
-  MaxGroupSize = ARGV[1] ? ARGV[1].to_i : 4
+  TargetGroupSize = ARGV[1] ? ARGV[1].to_i : 4
 
 
 
@@ -35,7 +35,7 @@ if ARGV[0] && __FILE__ == $0
 
 
 
-  grouper = Grouper.new(list: Names, previous_groups: PreviousGroups, max_group_size: MaxGroupSize)
+  grouper = Grouper.new(list: Names, previous_groups: PreviousGroups, max_group_size: TargetGroupSize)
 
   groups_ok = false
   until groups_ok

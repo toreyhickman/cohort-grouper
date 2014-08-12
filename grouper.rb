@@ -3,7 +3,7 @@ class Grouper
 
   def initialize(args)
     @list = args[:list]
-    @max_group_size = args.fetch(:max_group_size) { 4 }
+    @target_group_size = args.fetch(:target_group_size) { 4 }
     @previous_groups = args.fetch(:previous_groups) { [] }
   end
 
@@ -34,7 +34,7 @@ class Grouper
 
 
   private
-  attr_reader :list, :previous_groups, :name_pairs_map, :max_group_size
+  attr_reader :list, :previous_groups, :name_pairs_map, :target_group_size
 
   def record_pair_history
     @name_pairs_map = shuffled_list.each_with_object(Hash.new) do |name, name_pairs|
@@ -43,7 +43,7 @@ class Grouper
   end
 
   def set_groups_structure
-    @groups = Array.new(max_groups) { Array.new(max_group_size, nil) }
+    @groups = Array.new(target_groups) { Array.new(target_group_size, nil) }
     correct_for_uneven_groups
     disband_small_final_group
 
@@ -66,7 +66,7 @@ class Grouper
   def last_group_too_small
     last_group_size = groups.last.size
 
-    last_group_size == 1 || (max_group_size - last_group_size) > 1
+    last_group_size == 1 || (target_group_size - last_group_size) > 1
   end
 
   def previous_pairs(name)
@@ -77,11 +77,11 @@ class Grouper
     previous_groups.select { |group| group.include?(name) }
   end
 
-  def max_groups
-    @max_groups ||= calculate_max_groups
+  def target_groups
+    @target_groups ||= calculate_target_groups
   end
 
-  def calculate_max_groups
+  def calculate_target_groups
     even_groups? ? full_groups_count : full_groups_count + 1
   end
 
@@ -90,11 +90,11 @@ class Grouper
   end
 
   def uneven_group_count
-    (list.size % max_group_size)
+    (list.size % target_group_size)
   end
 
   def full_groups_count
-    list.size / max_group_size
+    list.size / target_group_size
   end
 
   def shuffled_list

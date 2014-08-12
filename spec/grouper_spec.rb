@@ -50,54 +50,54 @@ describe Grouper do
       end
     end
 
-    describe "#max_groups" do
-      context "list size evenly divisible by max group size" do
-        it "divides list size by max group size" do
+    describe "#target_groups" do
+      context "list size evenly divisible by target group size" do
+        it "divides list size by target group size" do
           allow(grouper).to receive(:list) { Array.new(16) }
-          allow(grouper).to receive(:max_group_size) { 4 }
+          allow(grouper).to receive(:target_group_size) { 4 }
 
-          expect(grouper.send(:max_groups)).to eq 4
+          expect(grouper.send(:target_groups)).to eq 4
         end
       end
 
-      context "list size not evenly divisible by max group size" do
-        it "divides list size by max group size and adds one" do
+      context "list size not evenly divisible by target group size" do
+        it "divides list size by target group size and adds one" do
           allow(grouper).to receive(:list) { Array.new(18) }
-          allow(grouper).to receive(:max_group_size) { 4 }
+          allow(grouper).to receive(:target_group_size) { 4 }
 
-          expect(grouper.send(:max_groups)).to eq 5
+          expect(grouper.send(:target_groups)).to eq 5
         end
       end
     end
 
     describe "#set_groups_structure" do
-      context "list size evenly divisible by max group size" do
+      context "list size evenly divisible by target group size" do
         it "creates the right number of groups" do
           allow(grouper).to receive(:list) { Array.new(16) }
-          allow(grouper).to receive(:max_group_size) { 4 }
+          allow(grouper).to receive(:target_group_size) { 4 }
 
           expect(grouper.send(:set_groups_structure).size).to eq 4
         end
 
         it "puts the correct number of slots in each group" do
           allow(grouper).to receive(:list) { Array.new(16) }
-          allow(grouper).to receive(:max_group_size) { 4 }
+          allow(grouper).to receive(:target_group_size) { 4 }
 
           expect(grouper.send(:set_groups_structure).map(&:size)). to eq [4, 4, 4, 4]
         end
       end
 
-      context "list size not evenly divisible by max group size" do
+      context "list size not evenly divisible by target group size" do
         it "creates the right number of groups" do
           allow(grouper).to receive(:list) { Array.new(18) }
-          allow(grouper).to receive(:max_group_size) { 4 }
+          allow(grouper).to receive(:target_group_size) { 4 }
 
           expect(grouper.send(:set_groups_structure).size).to eq 4
         end
 
         it "puts the correct number of slots in each group" do
           allow(grouper).to receive(:list) { Array.new(18) }
-          allow(grouper).to receive(:max_group_size) { 4 }
+          allow(grouper).to receive(:target_group_size) { 4 }
 
           expect(grouper.send(:set_groups_structure).map(&:size)). to eq [5, 5, 4, 4]
         end
